@@ -1,80 +1,89 @@
 #!/usr/bin/env python
 
-import re, sys
+import re, sys, pprint
 
-DEFAULT_OWNERS = ("nobody",)
+DEFAULT_OWNER = 'nobody'
 
-if __name__ == "__main__":
-    name_stack = [DEFAULT_OWNERS,]
-    name_colors = {}
-    for name in name_stack:
-        name_colors[name] = ""
-    last_indent = 0
-    names = []
+def extract_owners(owner_str):
+    m = re.search("(\s*[a-zA-Z\.]+\s*(?:(?:,|/|and)\s*[a-zA-Z\.]+\s*)*)", owner_str)
+    if m:
+        names = re.split(",|/|and", m.group(1).replace(" ", ""))
+        return names
+    return []
 
-    # output string
-    op = ""
-    new_names = False
+def make_note(line, tabstr):
+    m = re.match('(\s*)(\+|\-)?\s*([^\[]*)(\[[^\]]+\])?', line)
+    if m:
+        groups = m.groups(default='')
+        indent = groups[0].count(tabstr)
+        owner = extract_owners(groups[3])
+        ap = True if groups[1] == '+' else False
+        return {
+            'level': indent,
+            'note': groups[2],
+            'owner': owner,
+            'ap': ap
+        }
+    else:
+        raise Exception('Bad line "%s"' % line)
 
-    for ln in sys.stdin:
-        ln = ln.rstrip()
-        # calc indent level
-        m = re.match( "(\s*)", ln )
-        indent = len(m.group(1).replace("\t", "  ")) / 2
-
-        # lose current owner if we
-        indent_change = indent - last_indent
-
-        while indent_change < 0:
-            name_stack.pop()
-            indent_change += 1
-
-        while indent_change > 0:
-            # copy parent owner
-            if new_names != False:
-                name_stack.append(new_names)
-            else:
-                name_stack.append(name_stack[-1])
-            indent_change -= 1
-
-        new_names = False
-
-        # lookup new owners 
-        m = re.search("(.*)\[(\s*[a-zA-Z\.]+\s*(?:(?:\/|and)\s*[a-zA-Z\.]+\s*)*)\]\s*$", ln)
-        if m:
-            names = re.split("/|and", m.group(2).replace(" ", ""))
-            for name in names:
-                # flag name as used
-                name_colors[name] = ""
-            new_names = names
-
-            ln = m.group(1)
-
+def projects(lines):
+    proj = []
+    for line in lines:
+        line = line.rstrip()
+        if line == "":
+            if len(proj):
+                yield proj
+                proj = []
+            # skip blank lines in general
         else:
-            names = name_stack[-1]
+            proj.append(make_note(line, '  '))
+    if len(proj):
+        yield proj
 
-        curr_indent = indent
+def parse(lines, default_owner):
+    proj_list = []
+    for proj_chunk in projects(lines):
+        proj_list.append(build_tree(proj_chunk, 0, [default_owner]))
+    return proj_list
 
-        # is item?
-        m = re.match( "(\s*)(\+|\-)(.*)$", ln )
-        if m:
-            # action point
-            if m.group(2) == "+":
-                # add owners
-                op += m.group(1) + "+"
-            else:
-                op += m.group(1) + "-"
-            op += m.group(3).rstrip()
-            if m.group(2) == "+":
-                # add owners
-                op += " [" + ", ".join(names) + "]"
-            op += "\n"
-        elif ln.strip() != "":
-            # is a project title
-            op += "" + ln.strip() + " (owner: " + ", ".join(names) + ")\n"
+def build_tree(items, this_level, default_owner):
+    proj = []
+    while len(items) > 0:
+        if items[0]['level'] < this_level:
+            # end of nested list
+            return proj
+        elif items[0]['level'] > this_level:
+            if len(proj) > 0:
+                proj[-1]['items'] = build_tree(items, items[0]['level'], proj[-1]['owner'])
+        elif items[0]['level'] == this_level:
+            # consume items as we go
+            item = items.pop(0)
+            if len(item['owner']) == 0:
+                item['owner'] = default_owner
+            proj.append(item)
+
+    return proj
+
+
+def render_project(p):
+    print "Project: %s (owner: %s)" % (p['note'], ", ".join(p['owner']) )
+    render_items(p['items'])
+
+def render_items(items):
+    for i in items:
+        if i['ap'] == True:
+            print "%s - AP: %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
         else:
-            op += ln + "\n"
+            print "%s - %s" % (i['level'] * "  ", i['note'] )
+        if 'items' in i:
+            render_items(i['items'])
 
-    print op
 
-
+if __name__=="__main__":
+    projects = parse(sys.stdin, DEFAULT_OWNER)
+    action = 'show'
+    if action == 'show':
+        for project in projects:
+            render_project(project[0])
+            print
