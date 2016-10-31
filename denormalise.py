@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import re, sys, pprint
+import re, sys, pprint, argparse
 
 DEFAULT_OWNER = 'nobody'
 
@@ -11,7 +11,7 @@ def extract_owners(owner_str):
         return names
     return []
 
-def make_note(line, tabstr):
+def parse_line(line, tabstr):
     m = re.match('(\s*)(\+|\-)?\s*([^\[]*)(\[[^\]]+\])?', line)
     if m:
         groups = m.groups(default='')
@@ -27,7 +27,7 @@ def make_note(line, tabstr):
     else:
         raise Exception('Bad line "%s"' % line)
 
-def projects(lines):
+def parse_projects(lines):
     proj = []
     for line in lines:
         line = line.rstrip()
@@ -37,13 +37,13 @@ def projects(lines):
                 proj = []
             # skip blank lines in general
         else:
-            proj.append(make_note(line, '  '))
+            proj.append(parse_line(line, '  '))
     if len(proj):
         yield proj
 
 def parse(lines, default_owner):
     proj_list = []
-    for proj_chunk in projects(lines):
+    for proj_chunk in parse_projects(lines):
         proj_list.append(build_tree(proj_chunk, 0, [default_owner]))
     return proj_list
 
@@ -73,7 +73,7 @@ def render_project(p):
 def render_items(items):
     for i in items:
         if i['ap'] == True:
-            print "%s - AP: %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
+            print "%s + %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
         else:
             print "%s - %s" % (i['level'] * "  ", i['note'] )
         if 'items' in i:
@@ -81,9 +81,24 @@ def render_items(items):
 
 
 if __name__=="__main__":
-    projects = parse(sys.stdin, DEFAULT_OWNER)
-    action = 'show'
-    if action == 'show':
+    parser = argparse.ArgumentParser(description="User management tool for Google Analytics")
+    parser.add_argument("--input", "-i", help="Input file in AP format", type=str, default='-')
+    parser.add_argument("--action", "-a", help="What output do you want", type=str, default='show')
+    parser.add_argument("--searchowner", "-o", help="Filter for which user", type=str)
+    args = parser.parse_args()
+
+    if args.input == '-':
+        projects = parse(sys.stdin, DEFAULT_OWNER)
+    else:
+        with open(args.input) as inp:
+            projects = parse(inp, DEFAULT_OWNER)
+
+    if args.action == 'show':
         for project in projects:
+            render_project(project[0])
+            print
+    if args.action == 'aps':
+        for project in projects:
+            search_project(projects[0], owner)
             render_project(project[0])
             print
