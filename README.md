@@ -29,6 +29,8 @@ Pipe it through process.py and it will denormalise all of the owners and output 
 ```
 python denormalise.py < actionplan.ap
 ```
+
+```
 Project: This is a project owned by sally  (owner: sally)
    - This is a note
    + This is an action point for sally [sally]
@@ -40,6 +42,5 @@ Project: This is a project owned by sally  (owner: sally)
 Project: This other project has a new owner  (owner: marvin)
    + AP for  [mary]
    + AP for  [marvin]
-
 ```
 
