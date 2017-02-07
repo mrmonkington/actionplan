@@ -67,13 +67,13 @@ def build_tree(items, this_level, default_owner):
 
 
 def render_project(p):
-    print "Project: %s (owner: %s)" % (p['note'], ", ".join(p['owner']) )
+    print "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
     render_items(p['items'])
 
 def render_items(items):
     for i in items:
         if i['ap'] == True:
-            print "%s + %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
+            print "%s + [ ] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
         else:
             print "%s - %s" % (i['level'] * "  ", i['note'] )
         if 'items' in i:
