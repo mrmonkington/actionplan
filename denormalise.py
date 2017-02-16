@@ -12,12 +12,17 @@ def extract_owners(owner_str):
     return []
 
 def parse_line(line, tabstr):
-    m = re.match('(\s*)(\+|\-)?\s*([^\[]*)(\[[^\]]+\])?', line)
+    m = re.match('(\s*)(\+|\-|=)?\s*([^\[]*)(\[[^\]]+\])?', line)
     if m:
         groups = m.groups(default='')
         indent = groups[0].count(tabstr)
         owner = extract_owners(groups[3])
-        ap = True if groups[1] == '+' else False
+        if groups[1] == '+':
+            ap = 'todo'
+        elif groups[1] == '=':
+            ap = 'done'
+        else:
+            ap = False
         return {
             'level': indent,
             'note': groups[2],
@@ -72,8 +77,10 @@ def render_project(p):
 
 def render_items(items):
     for i in items:
-        if i['ap'] == True:
+        if i['ap'] == 'todo':
             print "%s + [ ] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
+        elif i['ap'] == 'done':
+            print "%s + [x] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
         else:
             print "%s - %s" % (i['level'] * "  ", i['note'] )
         if 'items' in i:
