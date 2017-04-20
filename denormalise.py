@@ -71,9 +71,12 @@ def build_tree(items, this_level, default_owner):
     return proj
 
 
-def render_project(p):
-    print "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
-    render_items(p['items'])
+def render_projects(p):
+    for project in projects:
+        p = project[0]
+        print "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
+        render_items(p['items'])
+        print
 
 def render_items(items):
     for i in items:
@@ -86,12 +89,17 @@ def render_items(items):
         if 'items' in i:
             render_items(i['items'])
 
+def render_titles(projects):
+    for project in projects:
+        p = project[0]
+        print "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="User management tool for Google Analytics")
     parser.add_argument("--input", "-i", help="Input file in AP format", type=str, default='-')
-    parser.add_argument("--action", "-a", help="What output do you want", type=str, default='show')
-    parser.add_argument("--searchowner", "-o", help="Filter for which user", type=str)
+    #parser.add_argument("--showall", "-a", dest="action", help="What output do you want", action='store_const', const='showall')
+    parser.add_argument("--showtitles", "-t", dest="action", help="What output do you want", action='store_const', const='showtitles')
+    parser.add_argument("--filterowner", "-o", help="Filter APs for which user", type=str)
     args = parser.parse_args()
 
     if args.input == '-':
@@ -100,12 +108,7 @@ if __name__=="__main__":
         with open(args.input) as inp:
             projects = parse(inp, DEFAULT_OWNER)
 
-    if args.action == 'show':
-        for project in projects:
-            render_project(project[0])
-            print
-    if args.action == 'aps':
-        for project in projects:
-            search_project(projects[0], owner)
-            render_project(project[0])
-            print
+    if args.action == 'showtitles':
+        render_titles(projects)
+    else:
+        render_projects(projects)
