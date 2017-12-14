@@ -74,25 +74,25 @@ def build_tree(items, this_level, default_owner):
 def render_projects(p):
     for project in projects:
         p = project[0]
-        print "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
+        print( "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) ) )
         render_items(p['items'])
-        print
+        print()
 
 def render_items(items):
     for i in items:
         if i['ap'] == 'todo':
-            print "%s + [ ] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
+            print( "%s + [ ] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) ) )
         elif i['ap'] == 'done':
-            print "%s + [x] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
+            print( "%s + [x] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) ) )
         else:
-            print "%s - %s" % (i['level'] * "  ", i['note'] )
+            print( "%s - %s" % (i['level'] * "  ", i['note'] ) )
         if 'items' in i:
             render_items(i['items'])
 
 def render_titles(projects):
     for project in projects:
         p = project[0]
-        print "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
+        print( "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) ) )
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="User management tool for Google Analytics")
