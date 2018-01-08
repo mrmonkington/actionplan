@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import re, sys, pprint, argparse
+import re, sys, argparse
 
 DEFAULT_OWNER = 'nobody'
 
@@ -71,28 +71,34 @@ def build_tree(items, this_level, default_owner):
     return proj
 
 
-def render_projects(p):
+def render_projects(projects):
+    ret = ""
     for project in projects:
         p = project[0]
-        print( "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) ) )
-        render_items(p['items'])
-        print()
+        ret += "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) ) + "\n"
+        ret += render_items(p['items'])
+        ret += "\n"
+    return ret
 
 def render_items(items):
+    ret = ""
     for i in items:
         if i['ap'] == 'todo':
-            print( "%s + [ ] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) ) )
+            ret += "%s + [ ] %s [%s]\n" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
         elif i['ap'] == 'done':
-            print( "%s + [x] %s [%s]" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) ) )
+            ret += "%s + [x] %s [%s]\n" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
         else:
-            print( "%s - %s" % (i['level'] * "  ", i['note'] ) )
+            ret += "%s - %s\n" % (i['level'] * "  ", i['note'] )
         if 'items' in i:
-            render_items(i['items'])
+            ret += render_items(i['items'])
+    return ret
 
 def render_titles(projects):
+    ret = ""
     for project in projects:
         p = project[0]
-        print( "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) ) )
+        ret += "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
+    return ret
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="User management tool for Google Analytics")
@@ -109,6 +115,6 @@ if __name__=="__main__":
             projects = parse(inp, DEFAULT_OWNER)
 
     if args.action == 'showtitles':
-        render_titles(projects)
+        print( render_titles(projects) )
     else:
-        render_projects(projects)
+        print( render_projects(projects) )
