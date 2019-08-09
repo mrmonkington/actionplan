@@ -100,18 +100,18 @@ def render_titles(projects):
         ret += "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
     return ret
 
-if __name__=="__main__":
+def run():
     parser = argparse.ArgumentParser(description="User management tool for Google Analytics")
-    parser.add_argument("--input", "-i", help="Input file in AP format", type=str, default='-')
+    parser.add_argument(help="Input file in AP format", dest="input_file", type=str, default='-')
     #parser.add_argument("--showall", "-a", dest="action", help="What output do you want", action='store_const', const='showall')
     parser.add_argument("--showtitles", "-t", dest="action", help="What output do you want", action='store_const', const='showtitles')
     parser.add_argument("--filterowner", "-o", help="Filter APs for which user", type=str)
     args = parser.parse_args()
 
-    if args.input == '-':
+    if args.input_file == '-':
         projects = parse(sys.stdin, DEFAULT_OWNER)
     else:
-        with open(args.input) as inp:
+        with open(args.input_file) as inp:
             projects = parse(inp, DEFAULT_OWNER)
 
     if args.action == 'showtitles':
