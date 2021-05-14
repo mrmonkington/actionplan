@@ -70,42 +70,16 @@ def build_tree(items, this_level, default_owner):
 
     return proj
 
-
-def render_projects(projects):
-    ret = ""
-    for project in projects:
-        p = project[0]
-        ret += "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) ) + "\n"
-        ret += render_items(p['items'])
-        ret += "\n"
-    return ret
-
-def render_items(items):
-    ret = ""
-    for i in items:
-        if i['ap'] == 'todo':
-            ret += "%s + [ ] %s [%s]\n" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
-        elif i['ap'] == 'done':
-            ret += "%s + [x] %s [%s]\n" % (i['level'] * "  ", i['note'], ", ".join(i['owner']) )
-        else:
-            ret += "%s - %s\n" % (i['level'] * "  ", i['note'] )
-        if 'items' in i:
-            ret += render_items(i['items'])
-    return ret
-
-def render_titles(projects):
-    ret = ""
-    for project in projects:
-        p = project[0]
-        ret += "**Project: %s (owner: %s)**\n" % (p['note'], ", ".join(p['owner']) )
-    return ret
+import render.ap
+#import render.ap
 
 def run():
     parser = argparse.ArgumentParser(description="User management tool for Google Analytics")
     parser.add_argument(help="Input file in AP format", dest="input_file", type=str, default='-')
     #parser.add_argument("--showall", "-a", dest="action", help="What output do you want", action='store_const', const='showall')
     parser.add_argument("--showtitles", "-t", dest="action", help="What output do you want", action='store_const', const='showtitles')
-    parser.add_argument("--filterowner", "-o", help="Filter APs for which user", type=str)
+    parser.add_argument("--format", "-f", dest="format", help="What format do you want? Options: html, md. Default: md", type=str, default='md')
+    parser.add_argument("--filterowner", "-o", dest="owner_filter", help="Filter APs for which user", type=str, default="all")
     args = parser.parse_args()
 
     if args.input_file == '-':
@@ -114,6 +88,7 @@ def run():
         with open(args.input_file) as inp:
             projects = parse(inp, DEFAULT_OWNER)
 
+    if 
     if args.action == 'showtitles':
         print( render_titles(projects) )
     else:
