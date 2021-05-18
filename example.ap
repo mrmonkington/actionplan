@@ -1,18 +1,31 @@
-# Daily grind
+# Meeting title (optional) [mark]
 
-mark: mark@verynoisy.com
-barry: barry@example.com
+Some random text is allowed, it's fine. It doesn't have an owner, so you can do whatever you like.
 
-Project 1 [mark]
-  - It's going well
-  + Launch it
-    + Give it a test [barry]
+## Attending
 
-Ultra Project [barry]
-  + Can you hurry?
-    - Maybe
-	  + Figure it out [mark/barry]
+- mark - Mark Kennedy mark@verynoisy.com
+- barry - Barry Crackers barry@verynoisy.com
 
-AOB
-  - Not really
-  + Continue to plan stuff
+## Agenda
+
+- Project 1
+- Ultra project
+- AOB
+
+## Project 1 [mark]
+
+- It's going well
++ Launch it
+  + Give it a test [barry]
+
+## Ultra Project [barry]
+
++ Can you hurry?
+	- Maybe
++ Figure it out [mark/barry]
+
+## AOB
+
+- Not really
++ Continue to plan stuff
