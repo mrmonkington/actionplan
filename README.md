@@ -105,6 +105,10 @@ Storage backends supported:
     - You can view decisions by meeting series
     - You can view decisions by project
 
+  - Host in charm cloud?! https://charm.sh/
+
+  - Use Click for cli
+
 You can maintain a contact list in `~/.local/actionplan/contacts.txt`
 
 You can integrate with your directory provider e.g. Google Contacts?

@@ -22,14 +22,14 @@ def extract_owners(owner_str):
 def parse_line(line, tabstr):
     """Parses a line in the input stream
     """
-    match = re.match(r'(\s*)(\+|\-|=)?\s*([^\[]*)(\[[^\]]+\])?', line)
+    match = re.match(r'(\s*)(\+|\-|\*)?\s*([^\[]*)(\[[^\]]+\])?', line)
     if match:
         groups = match.groups(default='')
         indent = groups[0].count(tabstr)
         owner = extract_owners(groups[3])
         if groups[1] == '+':
             aptype = 'todo'
-        elif groups[1] == '=':
+        elif groups[1] == '*':
             aptype = 'done'
         else:
             aptype = False
@@ -120,9 +120,9 @@ def main():
             projects = parse(inp, DEFAULT_OWNER)
 
     if args.action == 'showtitles':
-        print(render.md.render_titles(projects))
+        print(md.render_titles(projects))
     else:
-        print(render.md.render_projects(projects))
+        print(md.render_projects(projects))
 
 if __name__ == "__main__":
     main()
