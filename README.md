@@ -88,6 +88,10 @@ Storage backends supported:
 
 ### Backlog
 
+  - Switch to Marko for parsing
+    - Update AST to include owners and denormalise
+    - Create custom Marko renderers for everything
+
   - Publishing to github creates an issue for each meeting with all the actions tickable? (Can this sync back in some way?)
 
   - You can view outstanding actions for anybody
