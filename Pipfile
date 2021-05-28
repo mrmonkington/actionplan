@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-marko = "*"
 graphviz = "*"
+marko = "*"
 
 [dev-packages]
 pytest = "*"
@@ -13,6 +13,8 @@ pytest-cov = "*"
 pylint = "*"
 mypy = "*"
 flake8 = "*"
+setuptools = "*"
 
 [requires]
 python_version = "3.8"
+
