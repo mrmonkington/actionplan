@@ -14,6 +14,7 @@ pylint = "*"
 mypy = "*"
 flake8 = "*"
 setuptools = "*"
+marko = {path = "lib/marko", editable = true}
 
 [requires]
 python_version = "3.8"
